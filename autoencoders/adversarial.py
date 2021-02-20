@@ -305,7 +305,7 @@ class AdversarialAutoencoderISIC(AdversarialAutoencoder):
 
     def __init__(self, shape, input_dim, latent_dim=4, hidden_dim=128, alpha=0.2, verbose=False,
                  store_intermediate=False, save_graph=False, path='./', name='aae'):
-        super(AdversarialAutoencoderCifar10, self).__init__(shape, input_dim, latent_dim, hidden_dim, alpha, verbose,
+        super(AdversarialAutoencoderISIC, self).__init__(shape, input_dim, latent_dim, hidden_dim, alpha, verbose,
                                                             store_intermediate, save_graph, path, name)
 
     def img_normalize(self, X):
