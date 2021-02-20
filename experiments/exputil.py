@@ -17,7 +17,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Activation
 from keras.datasets import mnist, cifar10, fashion_mnist
 
-from autoencoders.adversarial import AdversarialAutoencoderMnist, AdversarialAutoencoderCifar10
+from autoencoders.adversarial import AdversarialAutoencoderMnist, AdversarialAutoencoderCifar10 #, AdversarialAutoencoderISIC
 from autoencoders.variational import VariationalAutoencoderMnist, VariationalAutoencoderCifar10
 
 import warnings
@@ -54,6 +54,12 @@ def get_dataset(dataset):
         X_train = np.stack([gray2rgb(x) for x in X_train.reshape((-1, 28, 28))], 0)
         X_test = np.stack([gray2rgb(x) for x in X_test.reshape((-1, 28, 28))], 0)
         use_rgb = False
+
+    #elif dataset == 'ISIC':
+    #    (X_train, Y_train), (X_test, Y_test) = ISIC_load_data() #function to be defined
+    #    Y_test = Y_test.ravel()
+    #    use_rgb = True
+   
 
     else:
         print('unknown dataset %s' % dataset)
@@ -203,6 +209,8 @@ def get_autoencoder(X, ae_name, dataset, path_aemodels):
         latent_dim = 8
     elif dataset == 'cifar10':
         latent_dim = 16
+    #elif dataset == 'ISIC':
+        #latent_dim = 16
     elif dataset == 'cifar10bw':
         latent_dim = 16
     else:
@@ -219,6 +227,10 @@ def get_autoencoder(X, ae_name, dataset, path_aemodels):
             ae = AdversarialAutoencoderCifar10(shape=shape, input_dim=input_dim, latent_dim=latent_dim,
                                                hidden_dim=128, verbose=verbose, store_intermediate=store_intermediate,
                                                path=path_aemodels, name=name)
+        #elif dataset in ['ISIC']:
+            #ae = AdversarialAutoencoderISIC(shape=shape, input_dim=input_dim, latent_dim=latent_dim,
+                                               #hidden_dim=128, verbose=verbose, store_intermediate=store_intermediate,
+                                               #path=path_aemodels, name=name)
         else:
             return -1
 
