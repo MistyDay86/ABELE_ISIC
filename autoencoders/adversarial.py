@@ -308,6 +308,7 @@ class AdversarialAutoencoderISIC(AdversarialAutoencoder):
         super(AdversarialAutoencoderISIC, self).__init__(shape, input_dim, latent_dim, hidden_dim, alpha, verbose,
                                                             store_intermediate, save_graph, path, name)
 
+    #which normalization e denormalization?
     def img_normalize(self, X):
         return X.astype(np.float32) / 255.0
 
@@ -316,7 +317,7 @@ class AdversarialAutoencoderISIC(AdversarialAutoencoder):
 
     def build_encoder(self):
 
-        # Verificare che sia la struttura neuale corretta
+        # Verificare che sia la struttura neurale corretta
         
         x = Input(shape=self.shape)
         h = Conv2D(3, kernel_size=(2, 2), padding='same', activation='relu')(x)
@@ -340,7 +341,7 @@ class AdversarialAutoencoderISIC(AdversarialAutoencoder):
 
         lx = Input(shape=(self.latent_dim,))
 
-        # Verificare che sia la struttura neuale corretta
+        # Verificare che sia la struttura neurale corretta
         
         h = Dense(self.hidden_dim, activation='relu')(lx)
         h = Dense(32 * 16 * 16, activation='relu')(h)
@@ -388,6 +389,7 @@ def main():
     verbose = True
     store_intermediate = True
 
+    #change path an name for ISIC
     path = './mnist/aae/'
     name = 'mnist_aae_%d' % latent_dim
 
