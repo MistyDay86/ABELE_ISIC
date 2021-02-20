@@ -299,11 +299,83 @@ class AdversarialAutoencoderCifar10(AdversarialAutoencoder):
         validity = model(encoded_repr)
 
         return Model(encoded_repr, validity)
+    
+    
+class AdversarialAutoencoderISIC(AdversarialAutoencoder):
+
+    def __init__(self, shape, input_dim, latent_dim=4, hidden_dim=128, alpha=0.2, verbose=False,
+                 store_intermediate=False, save_graph=False, path='./', name='aae'):
+        super(AdversarialAutoencoderCifar10, self).__init__(shape, input_dim, latent_dim, hidden_dim, alpha, verbose,
+                                                            store_intermediate, save_graph, path, name)
+
+    def img_normalize(self, X):
+        return X.astype(np.float32) / 255.0
+
+    def img_denormalize(self, X):
+        return (X * 255).astype(np.int)
+
+    def build_encoder(self):
+
+        # Verificare che sia la struttura neuale corretta
+        
+        x = Input(shape=self.shape)
+        h = Conv2D(3, kernel_size=(2, 2), padding='same', activation='relu')(x)
+        h = Conv2D(32, kernel_size=(2, 2), padding='same', activation='relu', strides=(2, 2))(h)
+        h = Conv2D(32, kernel_size=3, padding='same', activation='relu', strides=1)(h)
+        h = Conv2D(32, kernel_size=3, padding='same', activation='relu', strides=1)(h)
+
+        h = Flatten()(h)
+        h = Dense(self.hidden_dim, activation='relu')(h)
+        mu = Dense(self.latent_dim)(h)
+        log_var = Dense(self.latent_dim)(h)
+        lx = Lambda(sampling)([mu, log_var])
+
+        model = Model(x, lx)
+        if self.verbose:
+            model.summary()
+
+        return model
+
+    def build_decoder(self):
+
+        lx = Input(shape=(self.latent_dim,))
+
+        # Verificare che sia la struttura neuale corretta
+        
+        h = Dense(self.hidden_dim, activation='relu')(lx)
+        h = Dense(32 * 16 * 16, activation='relu')(h)
+        h = Reshape((16, 16, 32))(h)
+        h = Conv2DTranspose(32, kernel_size=3, padding='same', strides=1, activation='relu')(h)
+        h = Conv2DTranspose(32, kernel_size=3, padding='same', strides=1, activation='relu')(h)
+        h = Conv2DTranspose(32, kernel_size=(3, 3), strides=(2, 2), padding='valid', activation='relu')(h)
+        h = Conv2D(3, kernel_size=2, padding='valid', activation='sigmoid')(h)
+
+        model = Model(lx, h)
+        if self.verbose:
+            model.summary()
+
+        return model
+
+    def build_discriminator(self):
+
+        model = Sequential()
+        model.add(Dense(self.hidden_dim, input_dim=self.latent_dim))
+        model.add(LeakyReLU(alpha=self.alpha))
+        model.add(Dense(self.hidden_dim//2))
+        model.add(LeakyReLU(alpha=self.alpha))
+        model.add(Dense(1, activation='sigmoid'))
+        if self.verbose:
+            model.summary()
+
+        encoded_repr = Input(shape=(self.latent_dim, ))
+        validity = model(encoded_repr)
+
+        return Model(encoded_repr, validity)    
 
 
 def main():
 
-    # Load the dataset
+    # Load the dataset. To do: change to ISIC
     (_, _), (X_test, Y_test) = mnist.load_data()
 
     shape = X_test[0].shape
@@ -323,7 +395,7 @@ def main():
     batch_size = 128
     sample_interval = 200
 
-    aae = AdversarialAutoencoderMnist(shape=shape, input_dim=input_dim, latent_dim=latent_dim, hidden_dim=hidden_dim,
+    aae = AdversarialAutoencoderISIC(shape=shape, input_dim=input_dim, latent_dim=latent_dim, hidden_dim=hidden_dim,
                                       verbose=verbose, store_intermediate=store_intermediate, path=path, name=name)
 
     aae.fit(X, epochs=epochs, batch_size=batch_size, sample_interval=sample_interval)
