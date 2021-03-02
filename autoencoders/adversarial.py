@@ -14,7 +14,7 @@ from keras.datasets import mnist
 from abc import abstractmethod
 
 from autoencoders.autoencoder import Autoencoder
-from exputils import ISIC_load_data
+from experiments.exputil import ISIC_load_data
 
 
 def sampling(args):
