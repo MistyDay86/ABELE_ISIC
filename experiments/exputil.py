@@ -3,6 +3,13 @@ import gzip
 import pickle
 import numpy as np
 
+import pandas as pd
+import glob
+import matplotlib.pyplot as plt
+import skimage.transform
+import os
+from sklearn.model_selection import train_test_split
+
 from skimage.color import gray2rgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
@@ -23,6 +30,45 @@ from autoencoders.variational import VariationalAutoencoderMnist, VariationalAut
 import warnings
 warnings.filterwarnings('ignore')
 
+def ISIC_load_data():
+    
+    def get_filelist(img_loc):
+        filelist = glob.glob(img_loc+'*.jpg')
+        filelist.sort()
+        return filelist
+    
+    img_loc = './Dataset/ISIC_2019_Training_Input/'
+    filelist = get_filelist(img_loc)
+    
+    def get_X_orig(filelist, input_shape):
+    
+        bs, n_H, n_W, n_C = input_shape
+        X_orig = np.empty([bs, n_H, n_W, n_C])
+
+        for i, fname in enumerate(filelist[:bs]):
+            img = plt.imread(fname)
+            img = skimage.transform.resize(img, (n_H,n_W), mode='constant')
+            X_orig[i] = img
+            if i%100 == 99 or i == bs-1:
+                print('{} files loaded'.format(i+1))
+    
+        return X_orig
+    
+    bs = len(filelist)
+    input_shape = [bs, 224, 224, 3]
+    X_orig = get_X_orig(filelist, input_shape)
+    
+    def get_Y_orig(labels_loc):
+        Y_df = pd.read_csv(labels_loc)
+        Y_orig = np.array(Y_df.iloc[:,1:])
+        return Y_orig
+    
+    labels_loc = './Dataset/ISIC_2019_Training_GroundTruth.csv'
+    Y_orig = get_Y_orig(labels_loc)
+    
+    X_train, X_test, Y_train, Y_test = train_test_split(X_orig, Y_orig, test_size=0.2, random_state=42)
+    
+    return (X_train, Y_train), (X_test, Y_test)
 
 def rgb2gray(rgb):
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
@@ -55,10 +101,10 @@ def get_dataset(dataset):
         X_test = np.stack([gray2rgb(x) for x in X_test.reshape((-1, 28, 28))], 0)
         use_rgb = False
 
-    #elif dataset == 'ISIC':
-    #    (X_train, Y_train), (X_test, Y_test) = ISIC_load_data() #function to be defined
-    #    Y_test = Y_test.ravel()
-    #    use_rgb = True
+    elif dataset == 'ISIC':
+        (X_train, Y_train), (X_test, Y_test) = ISIC_load_data()
+        Y_test = Y_test.ravel()
+        use_rgb = True
    
 
     else:
