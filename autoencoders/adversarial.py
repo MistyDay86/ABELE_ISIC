@@ -14,6 +14,7 @@ from keras.datasets import mnist
 from abc import abstractmethod
 
 from autoencoders.autoencoder import Autoencoder
+from exputils import ISIC_load_data
 
 
 def sampling(args):
@@ -377,7 +378,7 @@ class AdversarialAutoencoderISIC(AdversarialAutoencoder):
 def main():
 
     # Load the dataset. To do: change to ISIC
-    (_, _), (X_test, Y_test) = mnist.load_data()
+    (_, _), (X_test, Y_test) = ISIC_load_data()
 
     shape = X_test[0].shape
 
@@ -390,8 +391,8 @@ def main():
     store_intermediate = True
 
     #change path an name for ISIC
-    path = './mnist/aae/'
-    name = 'mnist_aae_%d' % latent_dim
+    path = './ISIC/aae/'
+    name = 'ISIC_aae_%d' % latent_dim
 
     epochs = 10000
     batch_size = 128
