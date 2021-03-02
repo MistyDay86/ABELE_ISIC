@@ -390,7 +390,6 @@ def main():
     verbose = True
     store_intermediate = True
 
-    #change path an name for ISIC
     path = './ISIC/aae/'
     name = 'ISIC_aae_%d' % latent_dim
 
