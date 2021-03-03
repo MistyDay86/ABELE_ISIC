@@ -255,8 +255,8 @@ def get_autoencoder(X, ae_name, dataset, path_aemodels):
         latent_dim = 8
     elif dataset == 'cifar10':
         latent_dim = 16
-    #elif dataset == 'ISIC':
-        #latent_dim = 16
+    elif dataset == 'ISIC':
+        latent_dim = 16
     elif dataset == 'cifar10bw':
         latent_dim = 16
     else:
@@ -273,10 +273,10 @@ def get_autoencoder(X, ae_name, dataset, path_aemodels):
             ae = AdversarialAutoencoderCifar10(shape=shape, input_dim=input_dim, latent_dim=latent_dim,
                                                hidden_dim=128, verbose=verbose, store_intermediate=store_intermediate,
                                                path=path_aemodels, name=name)
-        #elif dataset in ['ISIC']:
-            #ae = AdversarialAutoencoderISIC(shape=shape, input_dim=input_dim, latent_dim=latent_dim,
-                                               #hidden_dim=128, verbose=verbose, store_intermediate=store_intermediate,
-                                               #path=path_aemodels, name=name)
+        elif dataset in ['ISIC']:
+            ae = AdversarialAutoencoderISIC(shape=shape, input_dim=input_dim, latent_dim=latent_dim,
+                                               hidden_dim=128, verbose=verbose, store_intermediate=store_intermediate,
+                                               path=path_aemodels, name=name)
         else:
             return -1
 
