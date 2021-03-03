@@ -24,7 +24,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Activation
 from keras.datasets import mnist, cifar10, fashion_mnist
 
-from autoencoders.adversarial import AdversarialAutoencoderMnist, AdversarialAutoencoderCifar10 #, AdversarialAutoencoderISIC
+from autoencoders.adversarial import AdversarialAutoencoderMnist, AdversarialAutoencoderCifar10, AdversarialAutoencoderISIC
 from autoencoders.variational import VariationalAutoencoderMnist, VariationalAutoencoderCifar10
 
 import warnings
